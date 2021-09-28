@@ -1,7 +1,7 @@
 using System.Linq;
 using Api_Catalogos.Models;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Threading.Tasks;
 namespace Api_Catalogos.Controllers
 {
     [Route("api/[controller]")]
@@ -21,10 +21,10 @@ namespace Api_Catalogos.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult Get(int id)
+        public async Task<ActionResult> Get(int id)
         {
-            var cliente =
-                dbConexion.Clientes.SingleOrDefault(a => a.IdClientes == id);
+            /*var cliente = dbConexion.Clientes.SingleOrDefault(a => a.IdClientes == id);*/
+            var cliente = await dbConexion.Clientes.FindAsync(id);
             if (cliente != null)
             {
                 return Ok(cliente);
@@ -36,12 +36,13 @@ namespace Api_Catalogos.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] Clientes cliente)
+        public async Task<ActionResult> Post([FromBody] Clientes cliente)
         {
             if (ModelState.IsValid)
             {
                 dbConexion.Clientes.Add(cliente);
-                dbConexion.SaveChanges();
+                /*dbConexion.SaveChanges();*/
+                await dbConexion.SaveChangesAsync();
                 return Ok(cliente);
             }
             else
@@ -51,16 +52,14 @@ namespace Api_Catalogos.Controllers
         }
 
         [HttpPut]
-        public ActionResult Put([FromBody] Clientes cliente)
+        public async Task<ActionResult> Put([FromBody] Clientes cliente)
         {
-            var V_Cliete =
-                dbConexion
-                    .Clientes
-                    .SingleOrDefault(a => a.IdClientes == cliente.IdClientes);
+            var V_Cliete = dbConexion.Clientes.SingleOrDefault(a => a.IdClientes == cliente.IdClientes);
             if (V_Cliete != null && ModelState.IsValid)
             {
                 dbConexion.Entry(V_Cliete).CurrentValues.SetValues(cliente);
-                dbConexion.SaveChanges();
+                /*dbConexion.SaveChanges();*/
+                await dbConexion.SaveChangesAsync();
                 return Ok();
             }
             else
